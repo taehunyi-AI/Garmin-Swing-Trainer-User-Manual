@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SwingTraining v4.8.0 — Garmin Connect IQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090a; --s1:#0d1117; --s2:#111820;
+  --bdr:#1c2530; --gr:#00e07a; --bl:#00b4f5;
+  --yl:#f5c518; --rd:#ff4d4d; --tx:#ccd8e0;
+  --mt:#4e6070; --exc:#00e07a; --good:#00b4f5;
+  --fair:#f5c518; --poor:#ff4d4d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;font-weight:300;line-height:1.68;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,9,10,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bdr)}
+.nw{max-width:1160px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px}
+.nb{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:19px;letter-spacing:.1em;color:#fff;text-transform:uppercase}
+.nb em{color:var(--gr);font-style:normal}
+.nl{display:flex;gap:26px;list-style:none}
+.nl a{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mt);text-decoration:none;transition:color .18s}
+.nl a:hover{color:var(--gr)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:80px 28px 60px;text-align:center}
+.hbg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 42%,rgba(0,224,122,.055) 0%,transparent 70%)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,224,122,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,224,122,.025) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,#000 0%,transparent 100%)}
+.hring{position:absolute;border-radius:50%;border:1px solid rgba(0,224,122,.08);top:50%;left:50%;transform:translate(-50%,-50%);animation:rp 5s ease-in-out infinite}
+.hring:nth-child(4){width:560px;height:560px}.hring:nth-child(5){width:420px;height:420px;animation-delay:.7s;border-color:rgba(0,224,122,.055)}.hring:nth-child(6){width:280px;height:280px;animation-delay:1.4s;border-color:rgba(0,224,122,.035)}
+@keyframes rp{0%,100%{opacity:.45}50%{opacity:1}}
+.hb{position:relative;z-index:10;max-width:800px}
+.htag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gr);border:1px solid rgba(0,224,122,.28);padding:5px 16px;margin-bottom:32px}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(72px,14vw,130px);line-height:.88;letter-spacing:.02em;color:#fff;text-transform:uppercase;margin-bottom:10px}
+.hero h1 .ac{display:block;-webkit-text-stroke:2px var(--gr);color:transparent}
+.hdesc{font-size:15px;color:var(--mt);max-width:520px;margin:26px auto 0;line-height:1.72}
+.hkpi{display:flex;gap:0;justify-content:center;margin-top:52px;border:1px solid var(--bdr);overflow:hidden}
+.kpi{flex:1;padding:22px 12px;border-right:1px solid var(--bdr);text-align:center}
+.kpi:last-child{border-right:none}
+.kn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:38px;color:#fff;line-height:1}
+.kn s{font-size:20px;color:var(--gr);text-decoration:none}
+.kl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mt);margin-top:6px}
+
+/* LAYOUT */
+.w{max-width:1160px;margin:0 auto;padding:0 28px}
+section{padding:96px 0;border-top:1px solid var(--bdr)}
+.sl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gr);margin-bottom:14px}
+.st{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(36px,5vw,56px);color:#fff;letter-spacing:.03em;text-transform:uppercase;line-height:1;margin-bottom:50px}
+
+/* FEATURE GRID */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:52px}
+.fc{background:var(--s1);padding:34px 30px;position:relative;overflow:hidden;transition:background .2s}
+.fc:hover{background:var(--s2)}
+.fc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gr),transparent);transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.fc:hover::after{transform:scaleX(1)}
+.fi2{font-size:24px;margin-bottom:16px;display:block}
+.fc h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:#fff;margin-bottom:10px}
+.fc p{font-size:13px;color:var(--mt);line-height:1.64}
+
+/* STATE FLOW */
+.flow{display:flex;align-items:center;overflow-x:auto;padding-bottom:4px;margin-bottom:50px}
+.fn{flex:0 0 158px;background:var(--s1);border:1px solid var(--bdr);padding:20px 14px;text-align:center}
+.fn+.fn{border-left:none}
+.fn.hl{border-color:rgba(0,224,122,.35)}
+.fs{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:#fff;margin-bottom:7px}
+.fn.hl .fs{color:var(--gr)}
+.fd{font-size:11px;color:var(--mt);line-height:1.5}
+.fa{flex:0 0 28px;display:flex;align-items:center;justify-content:center;color:rgba(0,224,122,.4);font-size:15px}
+
+/* BUTTON TABLE */
+.bt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:52px}
+.bt th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:var(--mt);padding:12px 16px;text-align:left;border-bottom:2px solid var(--bdr);background:var(--s1)}
+.bt td{padding:12px 16px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+.bt tr:last-child td{border-bottom:none}
+.bt tr:hover td{background:rgba(0,224,122,.018)}
+.bk{display:inline-block;background:#131d24;border:1px solid #1e2d3a;border-bottom:3px solid #080d10;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;color:#fff;white-space:nowrap}
+.sp{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:2px;white-space:nowrap;margin:2px 2px 2px 0;background:#0d1117;border:1px solid var(--bdr);color:var(--mt)}
+.sp.d{color:var(--exc);border-color:rgba(0,224,122,.25)}
+.sp.r{color:var(--fair);border-color:rgba(245,197,24,.25)}
+.sp.s{color:var(--bl);border-color:rgba(0,180,245,.25)}
+.at{color:var(--tx);font-size:13px}
+.at small{display:block;font-size:11px;color:var(--mt);margin-top:3px}
+.at.bl2{color:var(--poor)}
+.at.ex{color:var(--mt);font-style:italic}
+
+/* STATS PAGES */
+.sp2{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:52px}
+.spg{background:var(--s1);border:1px solid var(--bdr);padding:22px 16px}
+.spn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:50px;color:rgba(0,224,122,.11);line-height:1;margin-bottom:7px}
+.spt{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:#fff;margin-bottom:12px}
+.spg ul{list-style:none;font-size:11px;color:var(--mt);line-height:2.1}
+.spg li::before{content:'→ ';font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gr)}
+
+/* SETTINGS */
+.sl2{display:flex;flex-direction:column;gap:2px;margin-bottom:52px}
+.sr{display:flex;align-items:center;gap:18px;padding:15px 20px;background:var(--s1);border:1px solid var(--bdr);font-size:13px;transition:background .18s}
+.sr:hover{background:var(--s2)}
+.sk{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gr);width:128px;flex-shrink:0}
+.sv{color:var(--tx);flex:1}
+.sn{font-size:11px;color:var(--mt)}
+
+/* QUALITY */
+.qg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:50px}
+.qc{padding:26px 18px;background:var(--s1);border:1px solid var(--bdr);position:relative;overflow:hidden}
+.qc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.qc.e::before{background:var(--exc)}.qc.g::before{background:var(--good)}.qc.f::before{background:var(--fair)}.qc.p::before{background:var(--poor)}
+.qb{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;letter-spacing:.04em;margin-bottom:6px}
+.qc.e .qb{color:var(--exc)}.qc.g .qb{color:var(--good)}.qc.f .qb{color:var(--fair)}.qc.p .qb{color:var(--poor)}
+.qr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);margin-bottom:10px}
+.qd{font-size:12px;color:var(--mt);line-height:1.55}
+
+/* TARGET TABLE */
+.tt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:50px}
+.tt th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mt);padding:12px 16px;text-align:left;border-bottom:2px solid var(--bdr);background:var(--s1)}
+.tt td{padding:13px 16px;border-bottom:1px solid var(--bdr)}
+.tt tr:last-child td{border-bottom:none}
+.tt tr:hover td{background:rgba(255,255,255,.012)}
+.vn{color:#fff;font-weight:500;font-family:'JetBrains Mono',monospace}
+.vu{font-size:10px;color:var(--mt)}
+
+/* 7-LAYER */
+.lys{display:flex;flex-direction:column;gap:2px;margin-bottom:50px}
+.ly{display:flex;align-items:center;gap:18px;padding:17px 20px;background:var(--s1);border:1px solid var(--bdr);transition:background .18s;position:relative;overflow:hidden}
+.ly:hover{background:var(--s2)}
+.ly::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--gr),var(--bl));opacity:0;transition:opacity .2s}
+.ly:hover::before{opacity:1}
+.lnum{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:rgba(0,224,122,.13);width:40px;flex-shrink:0;line-height:1}
+.lname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:#fff;width:190px;flex-shrink:0}
+.lval{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gr);width:190px;flex-shrink:0}
+.ldesc{font-size:12px;color:var(--mt);line-height:1.5}
+
+/* FIT */
+.fc2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:50px}
+.fg2{background:var(--s1);border:1px solid var(--bdr);overflow:hidden}
+.fhd{padding:13px 20px;border-bottom:1px solid var(--bdr);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gr)}
+.fr{display:flex;align-items:center;padding:11px 20px;border-bottom:1px solid var(--bdr);font-size:12px}
+.fr:last-of-type{border-bottom:none}
+.fid{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mt);width:24px;flex-shrink:0}
+.fnm{color:var(--tx);flex:1;padding:0 10px}
+.funit{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mt)}
+.fdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--exc);margin-left:6px;vertical-align:middle}
+
+/* DEVICES */
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:6px;margin-bottom:52px}
+.dv{background:var(--s1);border:1px solid var(--bdr);padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx);display:flex;align-items:center;gap:10px;transition:border-color .18s}
+.dv:hover{border-color:rgba(0,224,122,.3)}
+.dd{width:5px;height:5px;border-radius:50%;background:var(--gr);flex-shrink:0}
+
+/* CHANGELOG */
+.vb{display:inline-flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--bdr);padding:9px 18px;margin-bottom:24px}
+.vv{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;color:var(--gr);letter-spacing:.1em}
+.vd{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt)}
+.cl{display:flex;flex-direction:column;gap:5px}
+.ci{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;background:var(--s1);border:1px solid var(--bdr);font-size:13px;color:var(--tx);transition:background .18s}
+.ci:hover{background:var(--s2)}
+.ctg{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:1px;flex-shrink:0;min-width:50px;text-align:center;letter-spacing:.1em;text-transform:uppercase}
+.ctg.nw{background:rgba(0,224,122,.1);color:var(--exc);border:1px solid rgba(0,224,122,.2)}
+.ctg.fx{background:rgba(0,180,245,.1);color:var(--bl);border:1px solid rgba(0,180,245,.2)}
+.ctg.cl{background:rgba(245,197,24,.1);color:var(--yl);border:1px solid rgba(245,197,24,.2)}
+
+/* CALLOUT */
+.cb{border:1px solid;padding:17px 22px 17px 50px;margin:26px 0;font-size:13px;position:relative;line-height:1.68}
+.cb::before{position:absolute;left:16px;top:17px;font-size:16px}
+.cb.i{border-color:rgba(0,180,245,.24);background:rgba(0,180,245,.04);color:var(--tx)}
+.cb.i::before{content:'ℹ';color:var(--bl)}
+.cb.t{border-color:rgba(0,224,122,.2);background:rgba(0,224,122,.03);color:var(--tx)}
+.cb.t::before{content:'✦';color:var(--gr)}
+.cb.w{border-color:rgba(245,197,24,.24);background:rgba(245,197,24,.04);color:var(--tx)}
+.cb.w::before{content:'⚡';color:var(--yl)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--bdr);padding:44px 28px;text-align:center}
+.fb{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:10px}
+.fb em{color:var(--gr);font-style:normal}
+.fm{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:.1em}
+
+/* SCROLL FADE */
+.fi{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.fi.v{opacity:1;transform:none}
+
+/* SUB LABEL */
+.sub{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mt);margin:44px 0 14px}
+
+/* RESPONSIVE */
+@media(max-width:860px){.fg{grid-template-columns:1fr 1fr}.qg{grid-template-columns:1fr 1fr}.sp2{grid-template-columns:1fr 1fr}.fc2{grid-template-columns:1fr}.lname{width:130px}.lval{width:150px}.nl{display:none}}
+@media(max-width:560px){.fg{grid-template-columns:1fr}.hkpi .kpi{padding:16px 8px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nw">
+    <div class="nb">Swing<em>Training</em></div>
+    <ul class="nl">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#manual">Manual</a></li>
+      <li><a href="#metrics">Metrics</a></li>
+      <li><a href="#algorithm">Algorithm</a></li>
+      <li><a href="#fit">FIT Data</a></li>
+      <li><a href="#devices">Devices</a></li>
+      <li><a href="#changelog">Changelog</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbg"></div><div class="hgrid"></div>
+  <div class="hring"></div><div class="hring"></div><div class="hring"></div>
+  <div class="hb">
+    <div class="htag">Garmin Connect IQ &nbsp;·&nbsp; Watch App &nbsp;·&nbsp; v4.8.0</div>
+    <h1>Swing<span class="ac">Training</span></h1>
+    <p class="hdesc">Automatic swing detection and tempo training for golf, baseball, and tennis — powered entirely by your Garmin watch's built-in accelerometer. No phone. No external sensors.</p>
+    <div class="hkpi">
+      <div class="kpi"><div class="kn">7<s>L</s></div><div class="kl">Detection Layers</div></div>
+      <div class="kpi"><div class="kn">4</div><div class="kl">Sport Modes</div></div>
+      <div class="kpi"><div class="kn">19</div><div class="kl">Devices</div></div>
+      <div class="kpi"><div class="kn">16</div><div class="kl">FIT Fields</div></div>
+      <div class="kpi"><div class="kn">4</div><div class="kl">Stats Pages</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="w">
+    <div class="sl">Overview</div>
+    <h2 class="st">What is SwingTraining?</h2>
+    <div class="fg fi">
+      <div class="fc"><span class="fi2">⚡</span><h3>AUTO Detection</h3><p>7-layer algorithm detects every swing automatically — no button press during practice. Covers golf clubs (3I–PW), aluminum bat, wood bat, and tennis racket.</p></div>
+      <div class="fc"><span class="fi2">📐</span><h3>Tempo Analysis</h3><p>Measures backswing vs. downswing timing separately. Evaluates each swing against sport-specific targets with four quality grades: EX / GD / FA / PO.</p></div>
+      <div class="fc"><span class="fi2">📊</span><h3>Garmin Connect FIT</h3><p>Sessions save as standard Garmin FIT activities with 16 custom data fields — session summaries and per-swing charts sync to Garmin Connect automatically.</p></div>
+      <div class="fc"><span class="fi2">🔄</span><h3>Adaptive Threshold</h3><p>Detection sensitivity auto-calibrates from your last 10 swings (min. 5). Adapts to each person's individual swing strength. Manual reset in Settings.</p></div>
+      <div class="fc"><span class="fi2">📋</span><h3>4-Page Session Stats</h3><p>After each session: Summary overview, Tempo trend graph, Quality distribution chart, and Swing timing (ABDIF) analysis. Navigate with UP / DOWN.</p></div>
+      <div class="fc"><span class="fi2">🤲</span><h3>Left &amp; Right Handed</h3><p>Full support for both orientations via the on-watch Settings menu. Club selection and handedness persist automatically across sessions.</p></div>
+    </div>
+    <div class="cb i fi">SwingTraining runs entirely on-watch — no phone is needed during a session. Data syncs to Garmin Connect the next time your watch connects to the app.</div>
+  </div>
+</section>
+
+<!-- USER MANUAL -->
+<section id="manual">
+  <div class="w">
+    <div class="sl">User Manual</div>
+    <h2 class="st">How To Use</h2>
+
+    <!-- MODES -->
+    <div class="sub">Modes</div>
+    <div class="fg fi" style="grid-template-columns:1fr 1fr;margin-bottom:40px">
+      <div class="fc"><span class="fi2">🤖</span><h3>AUTO Mode</h3><p>Press START and swing freely. The app detects every swing automatically. Club is not tracked — all swings score against Golf targets. Toggle with UP or DOWN in IDLE.</p></div>
+      <div class="fc"><span class="fi2">🎯</span><h3>MANUAL Mode</h3><p>Press START → select club → swing. Records which club was used per swing. Supports all 11 clubs and sports (3I–PW, AL-BAT, WD-BAT, TENNIS) with sport-specific scoring.</p></div>
+    </div>
+
+    <!-- STATE FLOW -->
+    <div class="sub">App States</div>
+    <div class="flow fi">
+      <div class="fn"><div class="fs">IDLE</div><div class="fd">Select mode.<br>Press START.</div></div>
+      <div class="fa">→</div>
+      <div class="fn hl"><div class="fs">DETECTING</div><div class="fd">Sensor ON.<br>Swing count shown.</div></div>
+      <div class="fa">→</div>
+      <div class="fn"><div class="fs">ANALYZING</div><div class="fd">Swing captured.<br>Auto-computing.</div></div>
+      <div class="fa">→</div>
+      <div class="fn"><div class="fs">REVIEWING</div><div class="fd">Result shown 1.5 s,<br>then loops back.</div></div>
+      <div class="fa">→</div>
+      <div class="fn"><div class="fs">STATS</div><div class="fd">Session stats.<br>4 pages of data.</div></div>
+    </div>
+
+    <!-- BUTTON TABLE -->
+    <div class="sub">Button Reference</div>
+    <table class="bt fi">
+      <thead><tr><th>Button</th><th>State</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><span class="bk">START</span></td><td><span class="sp">IDLE</span></td><td class="at">Begin session → <strong>DETECTING</strong><small>AUTO: starts immediately · MANUAL: opens club selector first</small></td></tr>
+        <tr><td><span class="bk">START</span></td><td><span class="sp d">DETECTING</span> <span class="sp d">ANALYZING</span> <span class="sp r">REVIEWING</span></td><td class="at">End session → <strong>STATS</strong><small style="color:var(--gr)">FIT activity saved to Garmin Connect</small></td></tr>
+        <tr><td><span class="bk">START</span></td><td><span class="sp s">STATS</span></td><td class="at">Return to <strong>IDLE</strong></td></tr>
+        <tr><td><span class="bk">LAP</span></td><td><span class="sp d">DETECTING</span> <span class="sp d">ANALYZING</span></td><td class="at">Enter <strong>Browse Mode</strong><small>Pauses detection · scroll past swings with UP / DOWN</small></td></tr>
+        <tr><td><span class="bk">LAP</span></td><td><span class="sp r">REVIEWING (auto loop)</span></td><td class="at">Enter <strong>Browse Mode</strong><small>Stops 1.5 s auto-return timer · holds current swing on screen</small></td></tr>
+        <tr><td><span class="bk">LAP</span></td><td><span class="sp r">REVIEWING (browse)</span></td><td class="at">Resume <strong>DETECTING</strong></td></tr>
+        <tr><td><span class="bk">UP</span></td><td><span class="sp">IDLE</span></td><td class="at">Toggle <strong>AUTO ↔ MANUAL</strong></td></tr>
+        <tr><td><span class="bk">UP</span></td><td><span class="sp r">REVIEWING (browse)</span></td><td class="at">Previous swing</td></tr>
+        <tr><td><span class="bk">UP</span></td><td><span class="sp r">REVIEWING (auto loop)</span></td><td class="at">Enter Browse Mode + previous swing</td></tr>
+        <tr><td><span class="bk">UP</span></td><td><span class="sp s">STATS</span></td><td class="at">Previous stats page</td></tr>
+        <tr><td><span class="bk">DOWN</span></td><td><span class="sp">IDLE</span></td><td class="at">Toggle <strong>AUTO ↔ MANUAL</strong></td></tr>
+        <tr><td><span class="bk">DOWN</span></td><td><span class="sp r">REVIEWING (browse)</span></td><td class="at">Next swing</td></tr>
+        <tr><td><span class="bk">DOWN</span></td><td><span class="sp r">REVIEWING (auto loop)</span></td><td class="at">Enter Browse Mode + next swing</td></tr>
+        <tr><td><span class="bk">DOWN</span></td><td><span class="sp s">STATS</span></td><td class="at">Next stats page</td></tr>
+        <tr><td><span class="bk">BACK</span></td><td><span class="sp">IDLE</span></td><td class="at ex">Exit app</td></tr>
+        <tr><td><span class="bk">BACK</span></td><td><span class="sp d">DETECTING</span> <span class="sp d">ANALYZING</span> <span class="sp r">REVIEWING</span></td><td class="at bl2">⛔ Blocked — prevents accidental session exit<small>Use START to end the session intentionally</small></td></tr>
+        <tr><td><span class="bk">BACK</span></td><td><span class="sp s">STATS</span></td><td class="at">Return to <strong>IDLE</strong></td></tr>
+        <tr><td><span class="bk">MENU</span></td><td><span class="sp">Any state</span></td><td class="at">Open <strong>Settings</strong></td></tr>
+      </tbody>
+    </table>
+
+    <!-- STATS PAGES -->
+    <div class="sub">Session Stats — UP / DOWN to navigate</div>
+    <div class="sp2 fi">
+      <div class="spg"><div class="spn">1</div><div class="spt">Summary</div><ul><li>Total swings</li><li>Avg tempo ratio</li><li>Avg backswing time</li><li>Avg downswing time</li><li>Quality bar chart</li><li>Peak G force</li></ul></div>
+      <div class="spg"><div class="spn">2</div><div class="spt">Tempo Trend</div><ul><li>Ratio per swing</li><li>Target zone line</li><li>Swing # on X-axis</li></ul></div>
+      <div class="spg"><div class="spn">3</div><div class="spt">Quality Chart</div><ul><li>EX / GD / FA / PO counts</li><li>Horizontal bar chart</li><li>% breakdown</li></ul></div>
+      <div class="spg"><div class="spn">4</div><div class="spt">Timing Graph</div><ul><li>Backswing (A) line</li><li>Downswing (B) line</li><li>Difference (D) line</li><li>Info (I) reference</li></ul></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="sub">Settings — press MENU from any screen</div>
+    <div class="sl2 fi">
+      <div class="sr"><div class="sk">CLUB</div><div class="sv">Select sport / club: 3I 4I 5I 6I 7I 8I 9I PW AL-BAT WD-BAT TENNIS</div><div class="sn">MANUAL mode only</div></div>
+      <div class="sr"><div class="sk">HAND</div><div class="sv">RIGHT-HANDED or LEFT-HANDED — changes detection axis accordingly</div><div class="sn">Persists across sessions</div></div>
+      <div class="sr"><div class="sk">VIBRATION</div><div class="sv">ON / OFF — haptic feedback pulse on each detected swing</div><div class="sn"></div></div>
+      <div class="sr"><div class="sk">CALIBRATION</div><div class="sv">Reset adaptive threshold history — use when switching users or grip styles</div><div class="sn">Clears 10-swing history</div></div>
+    </div>
+
+    <div class="cb t fi"><strong>Pro Tip:</strong> In AUTO mode, just press START and swing freely — the app handles all detection. When finished, press START to end the session and the FIT file saves automatically.</div>
+    <div class="cb w fi"><strong>Browse Mode:</strong> Press LAP during any active state to pause detection and scroll all past swings with UP / DOWN. Press LAP again to resume. UP / DOWN during the auto review loop also enters Browse Mode automatically.</div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section id="metrics">
+  <div class="w">
+    <div class="sl">Swing Metrics</div>
+    <h2 class="st">What Gets Measured</h2>
+
+    <div class="sub">Quality Scale</div>
+    <div class="qg fi">
+      <div class="qc e"><div class="qb">EXCELLENT</div><div class="qr">EX · Score 3 · ≤ 30% of tolerance</div><div class="qd">Both backswing and downswing within ±30% of sport target. Best achievable result per swing.</div></div>
+      <div class="qc g"><div class="qb">GOOD</div><div class="qr">GD · Score 2 · ≤ 60% of tolerance</div><div class="qd">Solid swing within ±60% of target. Minor deviation from ideal — still a strong performance.</div></div>
+      <div class="qc f"><div class="qb">FAIR</div><div class="qr">FA · Score 1 · within tolerance</div><div class="qd">Detectable variance. Within the overall tolerance window but not optimal for that sport.</div></div>
+      <div class="qc p"><div class="qb">POOR</div><div class="qr">PO · Score 0 · outside tolerance</div><div class="qd">Timing breakdown outside the tolerance range. Focus area for targeted practice.</div></div>
+    </div>
+    <div class="cb i fi"><strong>Scoring rule:</strong> Each swing receives two independent scores — one for backswing timing, one for downswing timing. The final quality is the <em>minimum</em> of the two, so both phases must be on-target for a high grade.</div>
+
+    <div class="sub" style="margin-top:48px">Sport-Specific Targets</div>
+    <table class="tt fi">
+      <thead><tr><th>Sport / Club</th><th>Target Backswing</th><th>Tolerance (Back)</th><th>Target Downswing</th><th>Tolerance (Down)</th><th>Tempo Ratio</th></tr></thead>
+      <tbody>
+        <tr><td>⛳ Golf (3I – PW)</td><td><span class="vn">900</span> <span class="vu">ms</span></td><td><span class="vn">±120</span> <span class="vu">ms</span></td><td><span class="vn">300</span> <span class="vu">ms</span></td><td><span class="vn">±50</span> <span class="vu">ms</span></td><td><span class="vn">3.0 : 1</span></td></tr>
+        <tr><td>🏏 Aluminum Bat</td><td><span class="vn">350</span> <span class="vu">ms</span></td><td><span class="vn">±60</span> <span class="vu">ms</span></td><td><span class="vn">200</span> <span class="vu">ms</span></td><td><span class="vn">±35</span> <span class="vu">ms</span></td><td><span class="vn">1.75 : 1</span></td></tr>
+        <tr><td>🪵 Wood Bat</td><td><span class="vn">450</span> <span class="vu">ms</span></td><td><span class="vn">±80</span> <span class="vu">ms</span></td><td><span class="vn">280</span> <span class="vu">ms</span></td><td><span class="vn">±45</span> <span class="vu">ms</span></td><td><span class="vn">1.6 : 1</span></td></tr>
+        <tr><td>🎾 Tennis</td><td><span class="vn">400</span> <span class="vu">ms</span></td><td><span class="vn">±80</span> <span class="vu">ms</span></td><td><span class="vn">180</span> <span class="vu">ms</span></td><td><span class="vn">±30</span> <span class="vu">ms</span></td><td><span class="vn">2.2 : 1</span></td></tr>
+      </tbody>
+    </table>
+    <div class="cb w fi"><strong>About Peak G:</strong> Displayed as a relative intensity indicator only. Wrist-mounted sensors cannot be converted to club-head speed due to double-pendulum swing dynamics. Garmin hardware saturates at ±8 G. Compare Peak G across your own swings — not as an absolute measure.</div>
+  </div>
+</section>
+
+<!-- ALGORITHM -->
+<section id="algorithm">
+  <div class="w">
+    <div class="sl">Detection Engine</div>
+    <h2 class="st">7-Layer Algorithm</h2>
+    <div class="lys fi">
+      <div class="ly"><div class="lnum">L1</div><div class="lname">Duration Gate</div><div class="lval">300–1500 ms (Golf)</div><div class="ldesc">Rejects events too short (noise) or too long (sustained arm movement). Each sport has its own min/max detection window.</div></div>
+      <div class="ly"><div class="lnum">L2</div><div class="lname">Peak Accel Gate</div><div class="lval">≥ 3.0 G required</div><div class="ldesc">Confirms a genuine swing versus incidental movement. Adaptive threshold recalibrates from your rolling 10-swing history.</div></div>
+      <div class="ly"><div class="lnum">L3</div><div class="lname">Backswing Ratio Gate</div><div class="lval">≥ 25% of duration</div><div class="ldesc">Validates a proper backswing phase — distinguishes a full swing from a punch or half-strike motion.</div></div>
+      <div class="ly"><div class="lnum">L4</div><div class="lname">Sample Rate</div><div class="lval">25 Hz · 40 ms tick</div><div class="ldesc">Fixed polling rate ensures consistent timing resolution across all 19 supported Garmin devices.</div></div>
+      <div class="ly"><div class="lnum">L5</div><div class="lname">Smoothness Filter</div><div class="lval">SensorPipeline MA</div><div class="ldesc">Moving-average smoothing on raw accelerometer data suppresses high-frequency vibration artifacts from grip contact.</div></div>
+      <div class="ly"><div class="lnum">L6</div><div class="lname">Energy Analysis</div><div class="lval">SwingFeature extraction</div><div class="ldesc">Locates the backswing / downswing boundary via zero-crossing of the acceleration envelope, extracting precise BS/DS split timing.</div></div>
+      <div class="ly"><div class="lnum">L7</div><div class="lname">Adaptive Threshold</div><div class="lval">Last 10 swings · min 5</div><div class="ldesc">Continuously recalibrates detection sensitivity from your rolling history. Reset via CALIBRATION in Settings when switching users.</div></div>
+    </div>
+    <div class="cb i fi"><strong>Cooldown period</strong> after each detection prevents double-counting the follow-through phase — Golf: 2000 ms &nbsp;·&nbsp; AL-BAT: 1500 ms &nbsp;·&nbsp; WD-BAT: 1500 ms &nbsp;·&nbsp; Tennis: 1000 ms.</div>
+  </div>
+</section>
+
+<!-- FIT DATA -->
+<section id="fit">
+  <div class="w">
+    <div class="sl">FIT Recording</div>
+    <h2 class="st">Garmin Connect Data</h2>
+    <p style="color:var(--mt);max-width:560px;margin-bottom:38px;font-size:14px">Sessions save as standard Garmin FIT activity files. The 16 custom fields appear in Garmin Connect under the activity details panel.</p>
+    <div class="fc2 fi">
+      <div class="fg2">
+        <div class="fhd">Session Fields · 9 fields · Activity Summary Tab</div>
+        <div class="fr"><div class="fid">0</div><div class="fnm">Total Swings</div><div class="funit">swings</div></div>
+        <div class="fr"><div class="fid">1</div><div class="fnm">Avg Tempo Ratio</div><div class="funit">×100</div></div>
+        <div class="fr"><div class="fid">2</div><div class="fnm">Avg Backswing</div><div class="funit">ms</div></div>
+        <div class="fr"><div class="fid">3</div><div class="fnm">Avg Downswing</div><div class="funit">ms</div></div>
+        <div class="fr"><div class="fid">12</div><div class="fnm">Consistency Score</div><div class="funit">%</div></div>
+        <div class="fr"><div class="fid">13</div><div class="fnm">EXC + GOOD Rate</div><div class="funit">%</div></div>
+        <div class="fr"><div class="fid">16</div><div class="fnm">Tempo CV (Variability)</div><div class="funit">%</div></div>
+        <div class="fr"><div class="fid">19</div><div class="fnm">EXC Count</div><div class="funit">swings</div></div>
+        <div class="fr"><div class="fid">20</div><div class="fnm">GOOD Count</div><div class="funit">swings</div></div>
+      </div>
+      <div class="fg2">
+        <div class="fhd">Record Fields · 7 fields · Per-Swing Charts</div>
+        <div class="fr"><div class="fid">7</div><div class="fnm">Swing Tempo <span class="fdot" title="chart ON"></span></div><div class="funit">×100</div></div>
+        <div class="fr"><div class="fid">11</div><div class="fnm">Club ID <span class="fdot" title="chart ON"></span></div><div class="funit">0–10</div></div>
+        <div class="fr"><div class="fid">8</div><div class="fnm">Swing Quality <span class="fdot" title="chart ON"></span></div><div class="funit">0–4</div></div>
+        <div class="fr"><div class="fid">9</div><div class="fnm">Peak G Force <span class="fdot" title="chart ON"></span></div><div class="funit">×100</div></div>
+        <div class="fr"><div class="fid">4</div><div class="fnm">Swing Count</div><div class="funit">swings</div></div>
+        <div class="fr"><div class="fid">5</div><div class="fnm">Backswing Time</div><div class="funit">ms</div></div>
+        <div class="fr"><div class="fid">6</div><div class="fnm">Downswing Time</div><div class="funit">ms</div></div>
+        <div style="padding:9px 20px;font-size:10px;color:var(--mt);font-family:'JetBrains Mono',monospace"><span class="fdot"></span> = chart visible in Garmin Connect</div>
+      </div>
+    </div>
+    <div class="cb i fi"><strong>Encoding note:</strong> Tempo Ratio is stored as an integer ×100 (e.g. ratio 3.00 → stored as 300). Divide the Garmin Connect value by 100 to read the actual ratio.</div>
+  </div>
+</section>
+
+<!-- DEVICES -->
+<section id="devices">
+  <div class="w">
+    <div class="sl">Compatibility</div>
+    <h2 class="st">Supported Devices</h2>
+    <p style="color:var(--mt);margin-bottom:30px;font-size:14px">19 devices &nbsp;·&nbsp; Connect IQ SDK ≥ 4.2.0 &nbsp;·&nbsp; Round display only</p>
+    <div class="dg fi">
+      <div class="dv"><div class="dd"></div>epix 2</div>
+      <div class="dv"><div class="dd"></div>epix 2 Pro 42mm</div>
+      <div class="dv"><div class="dd"></div>epix 2 Pro 47mm</div>
+      <div class="dv"><div class="dd"></div>epix 2 Pro 51mm</div>
+      <div class="dv"><div class="dd"></div>fēnix 7</div>
+      <div class="dv"><div class="dd"></div>fēnix 7S</div>
+      <div class="dv"><div class="dd"></div>fēnix 7X</div>
+      <div class="dv"><div class="dd"></div>fēnix 7 Pro (NoWiFi)</div>
+      <div class="dv"><div class="dd"></div>fēnix 7X Pro (NoWiFi)</div>
+      <div class="dv"><div class="dd"></div>fēnix 8 43mm</div>
+      <div class="dv"><div class="dd"></div>fēnix 8 47mm</div>
+      <div class="dv"><div class="dd"></div>fēnix E</div>
+      <div class="dv"><div class="dd"></div>Forerunner 265</div>
+      <div class="dv"><div class="dd"></div>Forerunner 265S</div>
+      <div class="dv"><div class="dd"></div>Forerunner 955</div>
+      <div class="dv"><div class="dd"></div>Forerunner 965</div>
+      <div class="dv"><div class="dd"></div>Venu 3</div>
+      <div class="dv"><div class="dd"></div>Venu 3S</div>
+      <div class="dv"><div class="dd"></div>Vivoactive 5</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHANGELOG -->
+<section id="changelog">
+  <div class="w">
+    <div class="sl">Release Notes</div>
+    <h2 class="st">Changelog</h2>
+    <div class="vb fi"><div class="vv">v4.8.0</div><div class="vd">2026 · 03 · 05</div></div>
+    <div class="cl fi">
+      <div class="ci"><span class="ctg nw">NEW</span><div>AUTO detection applied across all club modes — full 7-layer algorithm active for every sport.</div></div>
+      <div class="ci"><span class="ctg nw">NEW</span><div>Total swing time (BS + DS ms) metric — shown in Reviewing screen row 5 and Session Stats summary.</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>BACK in STATS now returns to IDLE instead of exiting to the Garmin watch launcher screen.</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>UP / DOWN during REVIEWING auto-loop now enters Browse Mode and cancels the 1.5 s auto-return timer before navigating.</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>BACK during active session (DETECTING / ANALYZING / REVIEWING) is fully blocked at both Delegate and Controller levels.</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>LAP in IDLE and STATS is now correctly ignored — defense-in-depth guard at Delegate layer plus Controller guard.</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>Session Stats mini-bars: slot factor 0.20 → 0.175 — bars no longer overflow circular display boundary on any device (240–454 px).</div></div>
+      <div class="ci"><span class="ctg fx">FIX</span><div>ReviewingView row 4 font SMALL → TINY — "BS 1500ms / DS 1500ms" no longer truncates on 240 px and 260 px devices.</div></div>
+      <div class="ci"><span class="ctg cl">CLEAN</span><div>Removed 15 unused properties, 23 unused resource strings, 12 dead UIStr constants, and all unused module imports.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">Swing<em>Training</em></div>
+  <div class="fm">v4.8.0 &nbsp;·&nbsp; Garmin Connect IQ &nbsp;·&nbsp; Watch App &nbsp;·&nbsp; minSdk 4.2.0 &nbsp;·&nbsp; 19 Devices</div>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('v');obs.unobserve(x.target)}})},{threshold:.07});
+document.querySelectorAll('.fi').forEach((el,i)=>{el.style.transitionDelay=(i%5*.08)+'s';obs.observe(el)});
+</script>
+</body>
+</html>
